@@ -1,4 +1,4 @@
-name: Build Upwork Proposal Agent Apps
+name: Build Upwork Workflow Apps
 
 on:
   push:
@@ -16,6 +16,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Rebrand in-app title
+        run: |
+          sed -i 's/Upwork Proposal Intelligence Agent/Upwork Workflow/g' upwork-agent-android/app/src/main/assets/index.html
+          sed -i 's/qualify jobs, choose an angle, and draft a story-led proposal/analyse jobs, choose the right angle, and draft a story-led proposal/g' upwork-agent-android/app/src/main/assets/index.html
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -39,13 +44,13 @@ jobs:
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Rename APK
-        run: cp upwork-agent-android/app/build/outputs/apk/debug/app-debug.apk "Upwork-Proposal-Intelligence-Agent-Android.apk"
+        run: cp upwork-agent-android/app/build/outputs/apk/debug/app-debug.apk "Upwork-Workflow-Android.apk"
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: Upwork-Proposal-Intelligence-Agent-Android
-          path: Upwork-Proposal-Intelligence-Agent-Android.apk
+          name: Upwork-Workflow-Android
+          path: Upwork-Workflow-Android.apk
           if-no-files-found: error
 
   windows:
@@ -66,11 +71,11 @@ jobs:
 
       - name: Build desktop EXE
         shell: pwsh
-        run: pyinstaller --noconfirm --clean --onefile --windowed --name "Upwork-Proposal-Intelligence-Agent" --collect-all webview --hidden-import webview.platforms.edgechromium upwork-agent-windows/main.py
+        run: pyinstaller --noconfirm --clean --onefile --windowed --name "Upwork-Workflow" --collect-all webview --hidden-import webview.platforms.edgechromium upwork-agent-windows/main.py
 
       - name: Upload Windows EXE
         uses: actions/upload-artifact@v4
         with:
-          name: Upwork-Proposal-Intelligence-Agent-Windows
-          path: dist/Upwork-Proposal-Intelligence-Agent.exe
+          name: Upwork-Workflow-Windows
+          path: dist/Upwork-Workflow.exe
           if-no-files-found: error
