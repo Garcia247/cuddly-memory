@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - upwork-agent-mobile-build
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
