@@ -1,0 +1,73 @@
+name: Build Upwork Proposal Agent Apps
+
+on:
+  push:
+    branches:
+      - upwork-agent-mobile-build
+  workflow_dispatch:
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Build installable APK
+        working-directory: upwork-agent-android
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: cp upwork-agent-android/app/build/outputs/apk/debug/app-debug.apk "Upwork-Proposal-Intelligence-Agent-Android.apk"
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Upwork-Proposal-Intelligence-Agent-Android
+          path: Upwork-Proposal-Intelligence-Agent-Android.apk
+          if-no-files-found: error
+
+  windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install desktop packaging dependencies
+        shell: pwsh
+        run: pip install -r upwork-agent-windows/requirements.txt
+
+      - name: Build desktop EXE
+        shell: pwsh
+        run: pyinstaller --noconfirm --clean --onefile --windowed --name "Upwork-Proposal-Intelligence-Agent" --collect-all webview --hidden-import webview.platforms.edgechromium upwork-agent-windows/main.py
+
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Upwork-Proposal-Intelligence-Agent-Windows
+          path: dist/Upwork-Proposal-Intelligence-Agent.exe
+          if-no-files-found: error
