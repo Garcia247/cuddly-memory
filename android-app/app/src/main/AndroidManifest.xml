@@ -2,12 +2,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
-        android:label="AI Upwork Agent"
+        android:label="Upwork Workflow"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
-            android:name=".V12Activity"
+            android:name=".UpworkWorkflowActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
