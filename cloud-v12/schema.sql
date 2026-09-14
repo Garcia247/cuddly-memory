@@ -50,6 +50,9 @@ create table if not exists applications (
 );
 
 create index if not exists applications_user_updated_idx on applications(user_id, updated_at desc);
+create unique index if not exists applications_user_client_ref_uniq
+  on applications(user_id, client_ref)
+  where client_ref is not null;
 
 create table if not exists ai_usage (
   id bigserial primary key,
