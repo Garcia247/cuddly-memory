@@ -2,7 +2,6 @@ package com.aiupworkagent.mobile;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,7 +27,7 @@ public class V12Activity extends V111Activity {
     private static final String TOKEN_KEY = "cloud_session_token";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         secure = new SecureStore(this);
     }
