@@ -4,12 +4,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class UpworkWorkflowActivity extends V12Activity {
     private static final int FOREST = Color.rgb(12, 77, 55);
@@ -33,7 +34,7 @@ public class UpworkWorkflowActivity extends V12Activity {
 
         LinearLayout head = row();
         head.setGravity(Gravity.CENTER_VERTICAL);
-        head.setPadding(dp(18), dp(16), dp(18), dp(14));
+        head.setPadding(dp(18), dp(14), dp(18), dp(12));
         head.setBackgroundColor(Color.WHITE);
         head.setElevation(dp(2));
 
@@ -46,20 +47,24 @@ public class UpworkWorkflowActivity extends V12Activity {
         name.setTextColor(TEXT);
         name.setPadding(0, dp(2), 0, 0);
         brand.addView(name);
-        TextView sub = txt("Qualify  •  Propose  •  Track  •  Learn", 10, false);
+        TextView sub = txt("Discover  •  Qualify  •  Propose  •  Track", 10, false);
         sub.setTextColor(SOFT_TEXT);
         sub.setPadding(0, dp(2), 0, 0);
         brand.addView(sub);
         head.addView(brand, new LinearLayout.LayoutParams(0, -2, 1));
 
-        cloudChip = chip("Checking…", MINT, FOREST);
+        String remembered = p.getString("lastCloudState", "");
+        String initial = "online".equals(remembered) ? "Online" : ("protected".equals(remembered) ? "Blocked" : "Checking…");
+        int initialBg = "online".equals(remembered) ? MINT : ("protected".equals(remembered) ? Color.rgb(253, 239, 237) : MINT);
+        int initialFg = "protected".equals(remembered) ? RED : FOREST;
+        cloudChip = chip(initial, initialBg, initialFg);
         head.addView(cloudChip);
         root.addView(head);
 
         ScrollView sv = new ScrollView(this);
         sv.setFillViewport(true);
         page = col();
-        page.setPadding(dp(16), dp(18), dp(16), dp(30));
+        page.setPadding(dp(16), dp(16), dp(16), dp(28));
         sv.addView(page);
         root.addView(sv, new LinearLayout.LayoutParams(-1, 0, 1));
 
@@ -78,7 +83,7 @@ public class UpworkWorkflowActivity extends V12Activity {
     void drawNav() {
         if (nav == null) return;
         nav.removeAllViews();
-        String[] names = {"Home", "Brain", "Analyze", "Tracker", "Cloud"};
+        String[] names = {"Home", "Brain", "Opportunities", "Tracker", "Cloud"};
         String[] marks = {"●", "✦", "◎", "▤", "☁"};
         Runnable[] actions = {this::home, this::brain, this::analyze, this::tracker, this::cloud};
 
@@ -96,7 +101,7 @@ public class UpworkWorkflowActivity extends V12Activity {
             icon.setTextColor(x == tab ? FOREST : SOFT_TEXT);
             item.addView(icon);
 
-            TextView label = txt(names[i], 9, x == tab);
+            TextView label = txt(names[i], 8, x == tab);
             label.setGravity(Gravity.CENTER);
             label.setTextColor(x == tab ? FOREST : SOFT_TEXT);
             label.setPadding(0, dp(2), 0, 0);
@@ -119,18 +124,18 @@ public class UpworkWorkflowActivity extends V12Activity {
         hello.setLetterSpacing(0.10f);
         page.addView(hello);
 
-        TextView h1 = txt("One workflow. Better applications.", 29, true);
+        TextView h1 = txt("One workflow. Better applications.", 27, true);
         h1.setTextColor(TEXT);
-        h1.setPadding(0, dp(5), 0, 0);
+        h1.setPadding(0, dp(4), 0, 0);
         page.addView(h1);
 
-        TextView lead = txt("Move from job discovery to a stronger proposal and a tracked outcome without losing the thread.", 13, false);
+        TextView lead = txt("Move from opportunity to proposal to outcome without losing the thread.", 12, false);
         lead.setTextColor(SOFT_TEXT);
-        lead.setPadding(0, dp(7), 0, dp(14));
+        lead.setPadding(0, dp(5), 0, dp(11));
         page.addView(lead);
 
         LinearLayout hero = col();
-        hero.setPadding(dp(20), dp(20), dp(20), dp(20));
+        hero.setPadding(dp(19), dp(18), dp(19), dp(18));
         GradientDrawable heroBg = new GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
             new int[]{FOREST_DARK, FOREST, Color.rgb(24, 112, 80)}
@@ -139,7 +144,7 @@ public class UpworkWorkflowActivity extends V12Activity {
         hero.setBackground(heroBg);
         hero.setElevation(dp(2));
         LinearLayout.LayoutParams heroLp = new LinearLayout.LayoutParams(-1, -2);
-        heroLp.setMargins(0, 0, 0, dp(10));
+        heroLp.setMargins(0, 0, 0, dp(8));
         hero.setLayoutParams(heroLp);
 
         TextView next = txt("NEXT BEST ACTION", 9, true);
@@ -147,38 +152,69 @@ public class UpworkWorkflowActivity extends V12Activity {
         next.setLetterSpacing(0.10f);
         hero.addView(next);
 
-        TextView heroTitle = txt("Qualify the job before you spend Connects.", 22, true);
+        TextView heroTitle = txt("Qualify the job before you spend Connects.", 21, true);
         heroTitle.setTextColor(Color.WHITE);
-        heroTitle.setPadding(0, dp(6), 0, 0);
+        heroTitle.setPadding(0, dp(5), 0, 0);
         hero.addView(heroTitle);
 
         TextView heroSub = txt("Check fit, client quality, pricing, evidence gaps and your proposal angle in one pass.", 12, false);
         heroSub.setTextColor(Color.rgb(223, 239, 231));
-        heroSub.setPadding(0, dp(6), 0, dp(8));
+        heroSub.setPadding(0, dp(5), 0, dp(6));
         hero.addView(heroSub);
 
-        Button go = button("Analyze an Upwork Job  →", Color.WHITE, FOREST, Color.WHITE);
+        Button go = button("Open Opportunities  →", Color.WHITE, FOREST, Color.WHITE);
         go.setOnClickListener(v -> analyze());
         hero.addView(go);
         page.addView(hero);
 
         page.addView(label("YOUR WORKFLOW"));
         LinearLayout flow = card();
-        flow.setPadding(dp(12), dp(14), dp(12), dp(14));
+        flow.setPadding(dp(10), dp(12), dp(10), dp(12));
         String[] steps = {"1\nQualify", "2\nPosition", "3\nPropose", "4\nTrack"};
+        Runnable[] stepActions = {this::analyze, this::brain, this::analyze, this::tracker};
         LinearLayout sr = row();
-        for (String step : steps) {
-            TextView s = txt(step, 11, true);
+        for (int i = 0; i < steps.length; i++) {
+            final int x = i;
+            TextView s = txt(steps[i], 10, true);
             s.setGravity(Gravity.CENTER);
             s.setTextColor(FOREST);
             s.setBackground(bg(MINT, 14, MINT_2, 1));
-            s.setPadding(dp(4), dp(10), dp(4), dp(10));
+            s.setPadding(dp(3), dp(10), dp(3), dp(10));
+            s.setClickable(true);
+            s.setFocusable(true);
+            s.setOnClickListener(v -> stepActions[x].run());
             LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(0, -2, 1);
             slp.setMargins(dp(3), 0, dp(3), 0);
             sr.addView(s, slp);
         }
         flow.addView(sr);
+        TextView flowHint = txt("Tap a stage to continue the workflow.", 9, false);
+        flowHint.setTextColor(SOFT_TEXT);
+        flowHint.setGravity(Gravity.CENTER);
+        flowHint.setPadding(0, dp(9), 0, 0);
+        flow.addView(flowHint);
         page.addView(flow);
+
+        List<String[]> xs = items();
+        if (!xs.isEmpty()) {
+            String[] recent = xs.get(0);
+            page.addView(label("RECENT OPPORTUNITY"));
+            LinearLayout recentCard = card();
+            LinearLayout top = row();
+            TextView rt = txt(recent[0], 15, true);
+            rt.setTextColor(TEXT);
+            top.addView(rt, new LinearLayout.LayoutParams(0, -2, 1));
+            top.addView(chip(recent[1] + "/100", MINT, FOREST));
+            recentCard.addView(top);
+            TextView rm = txt("$" + recent[2] + " budget  •  " + recent[3], 10, false);
+            rm.setTextColor(SOFT_TEXT);
+            rm.setPadding(0, dp(7), 0, dp(3));
+            recentCard.addView(rm);
+            Button continueButton = secondary("Continue Application  →");
+            continueButton.setOnClickListener(v -> tracker());
+            recentCard.addView(continueButton);
+            page.addView(recentCard);
+        }
 
         page.addView(label("PERFORMANCE SNAPSHOT"));
         LinearLayout r1 = row();
@@ -192,7 +228,7 @@ public class UpworkWorkflowActivity extends V12Activity {
 
         page.addView(label("SYSTEM READINESS"));
         LinearLayout statusCard = card();
-        statusCard.addView(statusRow("Cloud API", cloud ? "Online" : "Offline", cloud ? GREEN2 : RED));
+        statusCard.addView(statusRow("Cloud API", cloud ? "Online" : "Refreshing", cloud ? GREEN2 : GOLD));
         statusCard.addView(statusRow("Opportunity intelligence", ai ? "GPT-5.6 Terra live" : "Safe fallback", ai ? GREEN2 : GOLD));
         statusCard.addView(statusRow("Cloud account sync", persistence.equals("database-not-connected") ? "Pending" : "Active", persistence.equals("database-not-connected") ? GOLD : GREEN2));
         page.addView(statusCard);
